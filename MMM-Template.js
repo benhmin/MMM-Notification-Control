@@ -1,7 +1,13 @@
 Module.register("MMM-Template", {
 
   defaults: {
-    exampleContent: ""
+    exampleContent: "",
+    webhook: {
+      enabled: false,
+      port: 8080,
+      path: "/mmm-webhook",
+      secret: "" // optional; if set webhook requests must include this in X-Webhook-Secret header or body.secret
+    }
   },
 
   /**
@@ -16,9 +22,23 @@ Module.register("MMM-Template", {
    */
   start() {
     this.templateContent = this.config.exampleContent
+    this.page = 0
 
-    // set timeout for next random text
-    setInterval(() => this.addRandomText(), 3000)
+    // send config to node_helper so it can start a webhook server if enabled
+    this.sendSocketNotification("CONFIG", this.config)
+
+    // set timeout for next random text (store id so we can clear it on stop)
+    this._randomTextInterval = setInterval(() => this.addRandomText(), 3000)
+  },
+
+  /**
+   * Clear timers and other resources.
+   */
+  stop() {
+    if (this._randomTextInterval) {
+      clearInterval(this._randomTextInterval)
+      this._randomTextInterval = null
+    }
   },
 
   /**
@@ -31,6 +51,17 @@ Module.register("MMM-Template", {
   socketNotificationReceived: function (notification, payload) {
     if (notification === "EXAMPLE_NOTIFICATION") {
       this.templateContent = `${this.config.exampleContent} ${payload.text}`
+      this.updateDom()
+    } else if (notification === "PAGE_TURN") {
+      // example: increment page by 1 or use payload.amount
+      const increment = (payload && payload.amount) || 1
+      this.page += increment
+      this.templateContent = `${this.config.exampleContent} (Page ${this.page})`
+      this.updateDom()
+    } else if (notification === "SET_PAGE") {
+      const newPage = (payload && payload.page) || 0
+      this.page = newPage
+      this.templateContent = `${this.config.exampleContent} (Page ${this.page})`
       this.updateDom()
     }
   },
