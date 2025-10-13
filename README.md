@@ -103,6 +103,36 @@ curl -X POST -H 'Content-Type: application/json' -H 'X-Webhook-Secret: mysecret'
     http://<MM_IP>:8081/mmm-webhook
 ```
 
+#### Multiple notifications in one request
+
+The webhook also supports sending multiple notifications in a single POST. Use the `notifications` array to list strings or objects with a `notification` and optional `payload`.
+
+Example JSON body:
+
+```json
+{
+    "notifications": [
+        "TEMPLATE_RANDOM_TEXT",
+        { "notification": "PAGE_TURN", "payload": { "text": "Hello page" } },
+        { "notification": "SET_PAGE", "payload": { "page": 2 } }
+    ]
+}
+```
+
+curl example for multiple notifications (no secret):
+
+```bash
+curl -X POST -H 'Content-Type: application/json' \
+    -d '{"notifications":["TEMPLATE_RANDOM_TEXT",{"notification":"PAGE_TURN","payload":{"text":"Hello page"}},{"notification":"SET_PAGE","payload":{"page":2}}]}' \
+    http://<MM_IP>:8081/mmm-webhook
+```
+
+Expected response:
+
+```json
+{ "ok": true, "forwarded": ["TEMPLATE_RANDOM_TEXT","PAGE_TURN","SET_PAGE"] }
+```
+
 ### Port fallback and runtime info
 
 If the requested port (default 8081) is already in use, the helper will attempt the next ports (up to a configurable number of attempts). If no ports are available in that range, it will fall back to an ephemeral port chosen by the OS.

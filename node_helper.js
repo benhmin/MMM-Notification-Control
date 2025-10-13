@@ -75,20 +75,39 @@ module.exports = NodeHelper.create({
             return
           }
 
-          const notification = data.notification
-          const payload = data.payload || null
+          // Support either a single notification (legacy) or multiple notifications
+          // via `notifications: ["NOTIF", { notification: "X", payload: {...} }, ...]`.
+          const forwarded = []
 
-          if (!notification || typeof notification !== "string") {
+          const forwardOne = (notif, pl) => {
+            try {
+              if (notif && typeof notif === 'string') {
+                self.sendSocketNotification(notif, pl === undefined ? null : pl)
+                forwarded.push(notif)
+              }
+            } catch (e) {
+              // ignore send errors for individual notifications
+            }
+          }
+
+          if (Array.isArray(data.notifications)) {
+            data.notifications.forEach(item => {
+              if (typeof item === 'string') {
+                forwardOne(item, null)
+              } else if (item && typeof item.notification === 'string') {
+                forwardOne(item.notification, item.payload || null)
+              }
+            })
+          } else if (data.notification && typeof data.notification === 'string') {
+            forwardOne(data.notification, data.payload || null)
+          } else {
             res.writeHead(400, { "Content-Type": "application/json" })
             res.end(JSON.stringify({ error: "missing_notification" }))
             return
           }
 
-          // Forward to the front-end module(s)
-          self.sendSocketNotification(notification, payload)
-
           res.writeHead(200, { "Content-Type": "application/json" })
-          res.end(JSON.stringify({ ok: true, forwarded: notification }))
+          res.end(JSON.stringify({ ok: true, forwarded: forwarded }))
         })
       } else {
         res.writeHead(404, { "Content-Type": "application/json" })
