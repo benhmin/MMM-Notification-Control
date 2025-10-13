@@ -1,11 +1,5 @@
-# MMM-Template
-Use this template for creating new MagicMirror² modules.
-
-See the [wiki page](https://github.com/Dennis-Rosenbaum/MMM-Template/wiki) for an in depth overview of how to get started.
-
-# MMM-Template
-
-*MMM-Template* is a module for [MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror) that displays ... [Module description]
+# MMM-Notification-Control
+Module to receive network notifications (webhooks) and forward them into MagicMirror as notifications or display payloads.
 
 ## Screenshot
 
@@ -41,7 +35,7 @@ Minimal configuration to use the module:
 
 ```js
     {
-        module: 'MMM-Template',
+        module: 'MMM-Notification-Control',
         position: 'lower_third'
     },
 ```
@@ -50,10 +44,16 @@ Configuration with all options:
 
 ```js
     {
-        module: 'MMM-Template',
+        module: 'MMM-Notification-Control',
         position: 'lower_third',
         config: {
-            exampleContent: 'Welcome world'
+            exampleContent: 'Welcome world',
+            webhook: {
+              enabled: true,
+              port: 8080,
+              path: '/mmm-webhook',
+              secret: '' // optional
+            }
         }
     },
 ```
@@ -69,6 +69,35 @@ Option|Possible values|Default|Description
 Notification|Description
 ------|-----------
 `TEMPLATE_RANDOM_TEXT`|Payload must contain the text that needs to be shown on this module
+
+### Webhook usage
+
+The helper can listen for POST JSON webhooks and forward notifications to the front-end. POST a JSON body like:
+
+```json
+{
+    "notification": "PAGE_TURN",
+    "payload": { "text": "Hello from webhook" }
+}
+```
+
+Simple curl examples:
+
+- No secret:
+
+```bash
+curl -X POST -H 'Content-Type: application/json' \
+    -d '{"notification":"PAGE_TURN","payload":{"text":"Hello from webhook"}}' \
+    http://<MM_IP>:8080/mmm-webhook
+```
+
+- With secret header:
+
+```bash
+curl -X POST -H 'Content-Type: application/json' -H 'X-Webhook-Secret: mysecret' \
+    -d '{"notification":"PAGE_TURN","payload":{"text":"Secret hello"}}' \
+    http://<MM_IP>:8080/mmm-webhook
+```
 
 ## Developer commands
 

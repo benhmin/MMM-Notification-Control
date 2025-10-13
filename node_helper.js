@@ -87,11 +87,11 @@ module.exports = NodeHelper.create({
 
     this._server.on("error", err => {
       // simple logging
-      console.error("MMM-Template webhook server error:", err)
+      console.error("MMM-Notification-Control webhook server error:", err)
     })
 
     this._server.listen(port, () => {
-      console.log(`MMM-Template webhook listening on port ${port} path ${path}`)
+      console.log(`MMM-Notification-Control webhook listening on port ${port} path ${path}`)
     })
   },
 

@@ -1,4 +1,4 @@
-Module.register("MMM-Template", {
+Module.register("MMM-Notification-Control", {
 
   defaults: {
     exampleContent: "",
@@ -23,6 +23,7 @@ Module.register("MMM-Template", {
   start() {
     this.templateContent = this.config.exampleContent
     this.page = 0
+    this.webhookText = ""
 
     // send config to node_helper so it can start a webhook server if enabled
     this.sendSocketNotification("CONFIG", this.config)
@@ -53,10 +54,20 @@ Module.register("MMM-Template", {
       this.templateContent = `${this.config.exampleContent} ${payload.text}`
       this.updateDom()
     } else if (notification === "PAGE_TURN") {
-      // example: increment page by 1 or use payload.amount
-      const increment = (payload && payload.amount) || 1
-      this.page += increment
-      this.templateContent = `${this.config.exampleContent} (Page ${this.page})`
+      // Instead of changing pages when receiving a webhook, store the payload text
+      // and display it below the current content. Prefer payload as string or
+      // payload.text if present; fallback to JSON.
+      if (typeof payload === "string") {
+        this.webhookText = payload
+      } else if (payload && typeof payload.text === "string") {
+        this.webhookText = payload.text
+      } else {
+        try {
+          this.webhookText = payload ? JSON.stringify(payload) : ""
+        } catch (e) {
+          this.webhookText = String(payload)
+        }
+      }
       this.updateDom()
     } else if (notification === "SET_PAGE") {
       const newPage = (payload && payload.page) || 0
@@ -71,7 +82,25 @@ Module.register("MMM-Template", {
    */
   getDom() {
     const wrapper = document.createElement("div")
-    wrapper.innerHTML = `<b>Title</b><br />${this.templateContent}`
+
+    // Title
+    const title = document.createElement("div")
+    title.innerHTML = "<b>Title</b>"
+    wrapper.appendChild(title)
+
+    // Main content (from config / random text)
+    const content = document.createElement("div")
+    content.className = "template-content"
+    content.textContent = this.templateContent || ""
+    wrapper.appendChild(content)
+
+    // Webhook text (displayed below current content if present)
+    if (this.webhookText) {
+      const webhookDiv = document.createElement("div")
+      webhookDiv.className = "webhook-text"
+      webhookDiv.textContent = this.webhookText
+      wrapper.appendChild(webhookDiv)
+    }
 
     return wrapper
   },
