@@ -21,7 +21,7 @@ git clone [GitHub url]
 Go to the module directory and pull the latest changes:
 
 ```bash
-cd ~/MagicMirror/modules/MMM-Template
+cd ~/MagicMirror/modules/MMM-Notification-Control
 git pull
 ```
 
@@ -98,6 +98,12 @@ curl -X POST -H 'Content-Type: application/json' -H 'X-Webhook-Secret: mysecret'
     -d '{"notification":"PAGE_TURN","payload":{"text":"Secret hello"}}' \
     http://<MM_IP>:8080/mmm-webhook
 ```
+
+### Port fallback and runtime info
+
+If the requested port (default 8080) is already in use, the helper will attempt the next ports (up to a configurable number of attempts). If no ports are available in that range, it will fall back to an ephemeral port chosen by the OS.
+
+When the helper successfully starts the webhook server it sends a socket notification to the frontend module: `WEBHOOK_STARTED` with payload `{ port: <number>, path: <string> }`. The module displays this information in its UI so you can see which port/path to call.
 
 ## Developer commands
 

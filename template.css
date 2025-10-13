@@ -1,3 +1,20 @@
-.MMM-Template div {
-  color: purple;
+.MMM-Notification-Control .template-content {
+  color: #37e28a;
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+.MMM-Notification-Control .webhook-info {
+  color: #0066cc;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.MMM-Notification-Control .webhook-text {
+  color: #eb8585;
+  font-size: 14px;
+  margin-top: 6px;
+  background: rgba(0,0,0,0.03);
+  padding: 6px;
+  border-radius: 4px;
 }

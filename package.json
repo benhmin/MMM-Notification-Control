@@ -1,8 +1,8 @@
 {
-  "name": "mmm-template",
+  "name": "mmm-notification-control",
   "version": "1.0.0",
   "description": "[Module description]",
-  "main": "MMM-Template.js",
+  "main": "MMM-Notification-Control.js",
   "scripts": {
     "lint": "eslint",
     "lint:fix": "eslint --fix",
