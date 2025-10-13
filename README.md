@@ -48,12 +48,12 @@ Configuration with all options:
         position: 'lower_third',
         config: {
             exampleContent: 'Welcome world',
-            webhook: {
-              enabled: true,
-              port: 8080,
-              path: '/mmm-webhook',
-              secret: '' // optional
-            }
+                        webhook: {
+                            enabled: true,
+                            port: 8081,
+                            path: '/mmm-webhook',
+                            secret: '' // optional
+                        }
         }
     },
 ```
@@ -88,7 +88,7 @@ Simple curl examples:
 ```bash
 curl -X POST -H 'Content-Type: application/json' \
     -d '{"notification":"PAGE_TURN","payload":{"text":"Hello from webhook"}}' \
-    http://<MM_IP>:8080/mmm-webhook
+    http://<MM_IP>:8081/mmm-webhook
 ```
 
 - With secret header:
@@ -96,12 +96,12 @@ curl -X POST -H 'Content-Type: application/json' \
 ```bash
 curl -X POST -H 'Content-Type: application/json' -H 'X-Webhook-Secret: mysecret' \
     -d '{"notification":"PAGE_TURN","payload":{"text":"Secret hello"}}' \
-    http://<MM_IP>:8080/mmm-webhook
+    http://<MM_IP>:8081/mmm-webhook
 ```
 
 ### Port fallback and runtime info
 
-If the requested port (default 8080) is already in use, the helper will attempt the next ports (up to a configurable number of attempts). If no ports are available in that range, it will fall back to an ephemeral port chosen by the OS.
+If the requested port (default 8081) is already in use, the helper will attempt the next ports (up to a configurable number of attempts). If no ports are available in that range, it will fall back to an ephemeral port chosen by the OS.
 
 When the helper successfully starts the webhook server it sends a socket notification to the frontend module: `WEBHOOK_STARTED` with payload `{ port: <number>, path: <string> }`. The module displays this information in its UI so you can see which port/path to call.
 

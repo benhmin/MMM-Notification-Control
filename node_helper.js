@@ -31,7 +31,14 @@ module.exports = NodeHelper.create({
     }
 
     const basePort = webhookConfig.port || 8080
-    const path = webhookConfig.path || "/mmm-webhook"
+  // prefer port 8081 by default because it's been working for this user
+  // if webhookConfig.port is explicitly provided it will override this
+  // fallback is kept for backwards compatibility
+  // (we still allow ephemeral port 0 when all attempts fail)
+    
+  // Normalize default to 8081 if webhookConfig.port is undefined/null
+  const normalizedBasePort = webhookConfig.port == null ? 8081 : basePort
+  const path = webhookConfig.path || "/mmm-webhook"
     const expectedSecret = webhookConfig.secret || ""
     const maxAttempts = webhookConfig.maxPortAttempts || 10
 
@@ -124,7 +131,7 @@ module.exports = NodeHelper.create({
     }
 
     // kick off attempts
-    tryListen(basePort)
+  tryListen(normalizedBasePort)
   },
 
   _stopWebhookServer() {

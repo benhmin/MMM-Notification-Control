@@ -4,7 +4,7 @@ Module.register("MMM-Notification-Control", {
     exampleContent: "",
     webhook: {
       enabled: false,
-      port: 8080,
+      port: 8081,
       path: "/mmm-webhook",
       secret: "" // optional; if set webhook requests must include this in X-Webhook-Secret header or body.secret
     }
@@ -141,7 +141,7 @@ Module.register("MMM-Notification-Control", {
     exampleContent: "",
     webhook: {
       enabled: false,
-      port: 8080,
+      port: 8081,
       path: "/mmm-webhook",
       secret: "" // optional; if set webhook requests must include this in X-Webhook-Secret header or body.secret
     }
