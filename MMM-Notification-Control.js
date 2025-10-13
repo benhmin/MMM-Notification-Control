@@ -6,6 +6,9 @@ Module.register("MMM-Notification-Control", {
       enabled: false,
       port: 8081,
       path: "/mmm-webhook",
+      // List of notification strings to re-emit to the MagicMirror notification system.
+      // Empty array (default) means do not re-emit any notifications. Use ['*'] to allow all.
+      allowedNotifications: [],
       secret: "" // optional; if set webhook requests must include this in X-Webhook-Secret header or body.secret
     }
   },
@@ -51,6 +54,17 @@ Module.register("MMM-Notification-Control", {
    * @param {any} payload - The payload data`returned by the node helper.
    */
   socketNotificationReceived: function (notification, payload) {
+    // Re-emit curated notifications to other modules if configured in this.config.webhook.allowedNotifications
+    try {
+      const allowed = this.config && this.config.webhook && Array.isArray(this.config.webhook.allowedNotifications)
+        ? this.config.webhook.allowedNotifications
+        : []
+      if (allowed.length > 0 && (allowed.includes("*") || allowed.includes(notification))) {
+        this.sendNotification(notification, payload)
+      }
+    } catch (e) {
+      // ignore
+    }
     if (notification === "EXAMPLE_NOTIFICATION") {
       this.templateContent = `${this.config.exampleContent} ${payload.text}`
       this.updateDom()
@@ -187,6 +201,17 @@ Module.register("MMM-Notification-Control", {
    * @param {any} payload - The payload data`returned by the node helper.
    */
   socketNotificationReceived: function (notification, payload) {
+    // Re-emit curated notifications to other modules if configured in this.config.webhook.allowedNotifications
+    try {
+      const allowed = this.config && this.config.webhook && Array.isArray(this.config.webhook.allowedNotifications)
+        ? this.config.webhook.allowedNotifications
+        : []
+      if (allowed.length > 0 && (allowed.includes("*") || allowed.includes(notification))) {
+        this.sendNotification(notification, payload)
+      }
+    } catch (e) {
+      // ignore
+    }
     if (notification === "EXAMPLE_NOTIFICATION") {
       this.templateContent = `${this.config.exampleContent} ${payload.text}`
       this.updateDom()

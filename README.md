@@ -48,12 +48,16 @@ Configuration with all options:
         position: 'lower_third',
         config: {
             exampleContent: 'Welcome world',
-                        webhook: {
-                            enabled: true,
-                            port: 8081,
-                            path: '/mmm-webhook',
-                            secret: '' // optional
-                        }
+                            webhook: {
+                                enabled: true,
+                                port: 8081,
+                                path: '/mmm-webhook',
+                                // List of notifications to re-emit to other modules.
+                                // Empty array (default) means do not re-emit any notifications.
+                                // Use ['*'] to re-emit all incoming notifications.
+                                allowedNotifications: ['PAGE_TURN'],
+                                secret: '' // optional
+                            }
         }
     },
 ```
